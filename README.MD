@@ -11,10 +11,24 @@ So I want to know if there is any way to handle it.
 ## The TOC
 
 [libnx and unicode](unicode-stories.md)
+- the bug detail
+- my research about how retroarch failed to scan unicode paths
+- Begin journey: How retroarch calling to Libnx
+- Deep Search: How libnx calling to fs-srv
+- HIPC  (Horizon Inter-Process Communication)
+- CMIF (Command Interface Framework)
+- The suspicious part of Directory iteration
+- What I have tried?
 
 [directory-struct-of-libnx](directory-struct-of-libnx.md)
+- DirectoryEntry (ns)
+- DirectoryEntry （3Ds）
+    - Attributes （3DS）
 
-[hipc-cmid](hipc-cmid.md)
+
+
+[hipc-cmif](hipc-cmif.md)
+- key source of hipc service wrapper
 
 
 # Some conclusion
