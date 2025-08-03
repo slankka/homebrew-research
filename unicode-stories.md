@@ -130,8 +130,8 @@ HIPC (Horizon Inter-Process Communication) is a custom IPC implementation tailor
 
 There are two protocols over HIPC:
 
-CMIF: Command Interface (?). Supports session management with domains and dynamic multiplexing of services.
-TIPC: Tiny IPC. Simple and lightweight protocol.
+- CMIF: Command Interface (?). Supports session management with domains and dynamic multiplexing of services.
+- TIPC: Tiny IPC. Simple and lightweight protocol.
 
 ### CMIF (Command Interface Framework)
 
