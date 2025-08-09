@@ -46,6 +46,7 @@ If the folders and files are too many, it's difficult to manage. So I want to kn
 
 3. The nintendo is very professional at game console, how could they make mistake on file system service? we can see the switchbrew posted DirectoryEntry class fields, the 3ds using UTF16 names and 8.3 SFN, what employee can build a new system without checking the previous system documents!!
 
-4. There is a project [ftpsrv](https://github.com/ITotalJustice/ftpsrv) , the autor recently solves a game content unicode character problem. It is a special case that the game info stored in NACP file. The unicode characters is read and filtered before, he add `g_skip_ascii_convert` to skip the conversion. So the game info is displayed correctly. The key point is the game info is stored in a database file.
+4. There is a project [ftpsrv](https://github.com/ITotalJustice/ftpsrv) , the autor recently solves a game content unicode character problem. It is a special case that the game info stored in NACP file. The unicode characters is read and filtered before by replace the none-ascii character with `_`, he add `g_skip_ascii_convert` to skip the conversion, see [ftpsrv-issue 11](https://github.com/ITotalJustice/ftpsrv/issues/11). So the game info is displayed correctly. The key point is the game info is stored in a database file.
+
 
 
