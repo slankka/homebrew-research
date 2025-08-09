@@ -215,3 +215,7 @@ The another one is Goldleaf (author: XorTroll), he made lots of software fundati
 
 
 ## Conclusion
+1. It turns out that the Fatfs library `FF_LFN_UNICODE=2` `FF_CODE_PAGE=850` `FF_USE_LFN=3` cannot solve the Path problem.
+2. If you build TegraExplorer and print the FatFs read path, you will get right binary char buffer. That is because TegraExplorer is payload program, it do not use Hos services.
+3. By accessing the libnx fs_dev.h the low-level fs functions such as `fsFsOpenDirectory`, `fsDirRead`, `fsDirGetEntryCount`, `fsDirGetEntry`, `fsDirClose` can prove that the Nintendo HOS Kernel service `fsp-srv` is the root problem.
+4. By testing with TegraExplorer the default behavior of fatfs with `FF_CODE_PAGE=Latin1', it convert unicode character to '?'.
