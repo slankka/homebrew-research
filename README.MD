@@ -33,8 +33,13 @@ So I want to know if there is any way to handle it.
 
 # Some conclusion
 
-1. there are many libs or homebrews actuals treats none-ascii chars as '_', sush as fatfs. (without unicode)
-2. The AtmosphereNX has two ways to access SD card by Fatfs: File-Based Partition and Raw Partition. I think both way may work except accessing HOS kernel fs service. 
-3. File-Based partition, the AI mentioned that we can implement another Fs and driver to mount a file image. 
-    There are tools like `NxNandManager`, we can use it to make rom images and mount it.
-4. Raw partition, some user says the lakka build of Libretro can work with it.
+1. there is a few of libs or homebrews treat none-ascii chars as '_'.
+  - sush as fatfs (without unicode).
+  - I can see many homebrews turn off fatfs unicode support. 
+
+2. The AtmosphereNX has two ways to access SD card: File-Based Partition and Raw Partition. 
+  - File-Based partition, the AI mentioned that we can implement another Fs and driver to mount a file image. 
+    There are tools like `NxNandManager`, we can use it to make rom images and mount it. Maybe further retroarch customizing required.
+  - Raw partition, some user says the lakka build of Libretro can work with it.
+
+3. The nintendo is very professional at game console, how could they make mistake on file system service? we can see the switchbrew posted DirectoryEntry class fields, the 3ds using UTF16 names and 8.3 SFN, what employee can build a new system without checking the previous system documents!!
