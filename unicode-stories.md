@@ -171,18 +171,14 @@ static ssize_t fsdev_convertfromfspath(uint8_t *out, uint8_t *in, size_t len)
 
 ## What I have tried?
 
-1. Port libiconv: successfully compiled, costs a lot of time.
-port iconv to libnx, successfully compiled, installed, when I compile a simple libnx the sdmc example, compiled but crashed black screen.
-
-By lacking of devkitPro toolset linking knownledge, this progress failed at the end. But I learned how to port libraries and how to use devkitPro toolset.
-
-If someday I want to, I will try to port iconv to libnx, maybe I lost some Makefile arguments.
-
-2. compile libnx: change `fsdev_convertfromfspath` function to use libiconv.
-A lot of compile errors have been fixed, but launched with AtmosphereNX, as I said above, it still crashed black screen.
-
-3. modifing libnx switch/fs/sdmc example program.
+1. Modifing libnx switch/fs/sdmc example program.
 Just to print some Unicode value, it always print none-unicode characters to `_` underscore, `U+005F`, and reject to print directory with full unicode chars.
+
+2. Compile libnx: change `fsdev_convertfromfspath` function to print the original characters.
+The original characters are printed, the binary buffer turns out that DBCS characters are lost, forced replaced into '_'.
+
+3. Drown in the deep of libnx fs service, fatfs unicode configuration, find example of homebrews that supports unicode.
+I found there are many ways to show unicode characters, such as LVGL, SDL2, OpenGL or Webkit to render text.
 
 4. Find out who, where, how the Ams or libnx or some fs lib handle none-unicode to underscore.
 The Answer is : The Fatfs without unicode. And something more I do not known.
@@ -199,8 +195,8 @@ I can see a few person tried to print unicode characters on libnx console, from 
 
 It's achieveable by programing our own console, or use SDL2\Webkit to render text. that is another topic.
 
-5. avoid using libnx console, try payload
-To get rid of HOS filesystem bug, that is not using libnx the service wrapper, I tried to compile payload based software `TegraExplorer`, but when I try to modify FatFs unicode support, TegraExplorer says Payload size exceeds limit. `:(`
+5. Avoid using libnx console, try payload
+To get rid of HOS filesystem bug, that is not using libnx the service wrapper, I tried to compile payload based software `TegraExplorer`, but when I try to modify FatFs unicode support, TegraExplorer says Payload size exceeds limit. `:(`. so I just print the original hex byte of the directory entries. With it, I can understand the default behavior of FatFs.
 
 6. Learn some DBCS knowledge from Microsoft and appreciate them.
 I can see FatFs source code, it originally support DBCS such as Shift-JIS, but it's not enabled by libnx, and other homebrews.
@@ -218,4 +214,4 @@ The another one is Goldleaf (author: XorTroll), he made lots of software fundati
 1. It turns out that the Fatfs library `FF_LFN_UNICODE=2` `FF_CODE_PAGE=850` `FF_USE_LFN=3` cannot solve the Path problem.
 2. If you build TegraExplorer and print the FatFs read path, you will get right binary char buffer. That is because TegraExplorer is payload program, it do not use Hos services.
 3. By accessing the libnx fs_dev.h the low-level fs functions such as `fsFsOpenDirectory`, `fsDirRead`, `fsDirGetEntryCount`, `fsDirGetEntry`, `fsDirClose` can prove that the Nintendo HOS Kernel service `fsp-srv` is the root problem.
-4. By testing with TegraExplorer the default behavior of fatfs with `FF_CODE_PAGE=Latin1', it convert unicode character to '?'.
+4. By testing with TegraExplorer the default behavior of fatfs with `FF_CODE_PAGE=Latin1' and so on, in short turn off unicode conversion, it converts unicode character to '?'.
