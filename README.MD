@@ -2,11 +2,13 @@
 About the Horizon OS handling unicode characters.
 
 ## the background
-I'm a RetroArch user, I used to run RetroArch on PSV, and it works very well.
+I'm a RetroArch user, one day I copy a brunch of files and folders to Switch SdCard, many directories named as none-ascii characters are not displayed correctly.
 
-Now when I copy my retro game roms (a brunch of files and folders) to Switch, many of roms named as none-ascii characters, it's not easy to manage.
+The part of DBCS(double byte character set) are replaced by `_` underscore.
 
-So I want to know if there is any way to handle it.
+If the directory of file name is consists of full DBCS characters, the whole directory is not displayed.
+
+If the folders and files are too many, it's difficult to manage. So I want to know if there is any way to handle it.
 
 ## The TOC
 
