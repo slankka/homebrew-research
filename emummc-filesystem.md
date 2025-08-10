@@ -165,7 +165,7 @@ The Emummc is really a hardcore filesystem driver.
 
 How ever it may not solve the Unicode Path Problem.
 
-Because it is forward the /Nintendo paths passively. 
+Because it passively forward the /Nintendo paths if kernel asks. 
 
 If user application access the Hos Kernel service `Fsp-srv`, except the /Nintendo paths use FatFs (may decode Path correctly if configured codepage well), other paths will still access the filesystem provided by `OpenSdCardFileSystem`. The emummc may only forward the Emummc read/write request issued by the kernel. 
 
