@@ -1,18 +1,17 @@
-## The Relation between EmuMMC and file system
+## Analysis of EmuMMC and sd card file system
 
-EmuMMC is a virtual MMC storage device driver, it using FatFs to provide MMC file system.
+EmuMMC is a virtual MMC storage device driver, it uses FatFs's ability to provide MMC logical file system.
 
+It does not provide API to user applications, it only provide api to Atmosphere (used by Libstratosphere)
 
 ### How does EmuMMC connect to FatFS?
 
 Take a look at fatfs source code, these prototype functions are used to access the storage device under the FatFS.
 
-Note: these code are defined in diskio.h (FatFs)
+diskio.h (FatFs)
 ```c
 /*---------------------------------------*/
 /* Prototypes for disk control functions */
-
-
 DSTATUS disk_initialize (BYTE pdrv);
 DSTATUS disk_status (BYTE pdrv);
 DRESULT disk_read (BYTE pdrv, BYTE* buff, DWORD sector, UINT count);
@@ -22,9 +21,9 @@ DRESULT disk_ioctl (BYTE pdrv, BYTE cmd, void* buff);
 
 ### How does FatFs work? what role does it play?
 
-FatFs support file system on storage device, such as FAT12, FAT16, FAT32, exFAT
+FatFs supports file system on storage device, such as FAT12, FAT16, FAT32, exFAT
 
-FatFs define data structures which are File Object, Directory Object, File Information, etc.
+FatFs defines data structures: File Object, Directory Object, File Information, etc.
 
 FatFs has four types of domain operations:
 1. Directory Navigation
@@ -48,13 +47,16 @@ FatFs has four types of domain operations:
   - f_lseek() / f_truncate()
   - f_sync()
 
+Note: the introduction is simple, details are omitted. the details can be found in the source code.
+
 ### The DiskIO layer (interface)
+It's obvious that FatFs is a logical FileSystem, it needs a physical disk driver to access the storage controller.
 
-It's obvious that FatFs is a logical FileSystem, it need physical disk driver to access the real data.
+To achieve that, the Emummc plays a driver role on it. Emummc implements the diskio.h interface, and register it to FatFs. Emummc do the actually disk io even power detection.
 
-To achieve that, the Emummc plays a driver role on it. Emummc implements the diskio.h interface, and register it to FatFs. Emummc do the actualy disk io : disk_read and disk_write, etc. See the previous 'prototype' functions.
+for example the core functions are: disk_read and disk_write, etc. See the previous 'prototype' functions.
 
-how does emummc plug into FatFs's disk_read or disk_write
+### how does emummc plug into FatFs's disk_read or disk_write
 
 see the source code of 'sdmmc.h' (emuMMC)
 ```c
@@ -123,9 +125,9 @@ __initheap and __init
 
 ### How does Emummc treat the different paths?
 
-It redirect the Emmc Read/Write request to SDcard from /Nintendo to /emummc/Nintendo_XXXX (File-Based)
+It redirects the Emmc Read/Write requests to SDcard from /Nintendo to /emummc/Nintendo_XXXX (File-Based, or Raw Partition)
 
-So, that what they said:
+So, it is exactly that what they said:
 > Full support for `/Nintendo` folder redirection to a arbitrary path 
 
 main.c
@@ -146,7 +148,7 @@ static void load_emummc_ctx(void) {
 ```
 
 ### How does Emummc support 'No 8 char length restriction!'?
-back to FATFS, the ffconf.h:
+back to FATFS, the ffconf.h has serveral options related to the LFN and Unicode support.
 
 ```c
 #define FF_USE_LFN		3
@@ -165,8 +167,9 @@ How ever it may not solve the Unicode Path Problem.
 
 Because it is forward the /Nintendo paths passively. 
 
-If user application access the Hos Kernel service `Fsp-srv`, except the /Nintendo paths use FatFs (may decode Path correctly if configured codepage well), other paths will still access the filesystem provided by `OpenSdCardFileSystem`. The emummc may only forward the Emummc read/write request issued by kernel. 
+If user application access the Hos Kernel service `Fsp-srv`, except the /Nintendo paths use FatFs (may decode Path correctly if configured codepage well), other paths will still access the filesystem provided by `OpenSdCardFileSystem`. The emummc may only forward the Emummc read/write request issued by the kernel. 
 
-Maybe write directories and files into Emummc file-based partition then read it from Emummc, use may get the right path.
+Maybe writing directories and files into Emummc file-based/raw partition then read it from Emummc, use may get the right path.
+But the reader is still the kernel at this moment.
 
-Applications normally use stdio (POSIX) or libnx api to access the SdCard, for example, the RetroArch use libnx to browse sd card, it never ask kernel to access MMC (The kernel thought), so it is impossible to get the right unicode path data. 
+Applications normally use stdio (POSIX) or libnx api to access the SdCard, for example, the RetroArch use libnx to browse sd card, it never ask kernel to access MMC (The kernel thought), so it is impossible to get the right unicode path data so far.
