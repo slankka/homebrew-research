@@ -32,6 +32,14 @@ If the folders and files are too many, it's difficult to manage. So I want to kn
 [hipc-cmif](hipc-cmif.md)
 - key source of hipc service wrapper
 
+[emummc-filesystem](emummc-filesystem.md)
+- How does EmuMMC connect to FatFS?
+- How does FatFs work? what role does it play?
+- The DiskIO layer (interface)
+- the DMA address binding 
+- How does the EmuMMC self-infesting work?
+- How does Emummc treat the different paths?
+
 
 # Some conclusion
 
