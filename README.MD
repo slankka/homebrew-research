@@ -13,7 +13,7 @@ If the folders and files are too many, it's difficult to manage. So I want to kn
 ## The TOC
 
 [libnx and unicode](unicode-stories.md)
-- the bug detail
+- filename compatibility detail
 - my research about how retroarch failed to scan unicode paths
 - Begin journey: How retroarch calling to Libnx
 - Deep Search: How libnx calling to fs-srv
@@ -23,8 +23,8 @@ If the folders and files are too many, it's difficult to manage. So I want to kn
 - What I have tried?
 
 [switch-sfat-codecvt](switch-sfat-codecvt.md)
-- updated root-cause analysis of Horizon FS SD-card FAT filename conversion
-- why the simple byte-preserving patch helps Switch-created files
+- updated analysis of Horizon FS SD-card FAT filename conversion
+- why byte-preserving behavior helps Switch-created files
 - why PC-created standard UTF-16 FAT long filenames still need a real UTF-8/UTF-16 codecvt
 
 [directory-struct-of-libnx](directory-struct-of-libnx.md)
@@ -49,13 +49,13 @@ If the folders and files are too many, it's difficult to manage. So I want to kn
 
 # Some conclusion
 
-1. The stronger current conclusion is that Horizon OS FS itself converts SD-card FAT names through a CP932 / Shift-JIS codecvt layer. libnx and homebrew rendering can expose the problem, but they are not the root cause.
+1. The stronger current conclusion is that Horizon OS FS itself converts SD-card FAT names through a CP932 / Shift-JIS codecvt layer. More precisely, SFAT appears to be Nintendo's wrapper around prFile2, with CP932 conversion hardcoded in that path. libnx and homebrew rendering can expose the limitation, but they are not the place where this conversion policy is chosen.
 
 2. The AtmosphereNX has two ways to access SD card: File-Based Partition and Raw Partition. 
   - File-Based partition, the AI mentioned that we can implement another Fs and driver to mount a file image. 
     There are tools like `NxNandManager`, we can use it to make rom images and mount it. Maybe further retroarch customizing required.
   - Raw partition, some user says the lakka build of Libretro can work with it.
 
-3. The nintendo is very professional at game console, how could they make mistake on file system service? we can see the switchbrew posted DirectoryEntry class fields, the 3ds using UTF16 names and 8.3 SFN, what employee can build a new system without checking the previous system documents!!
+3. This should be described as a long-lived implementation choice instead of assigning blame. The SFAT path may be carrying a prFile2 / CP932 compatibility choice that has existed for many years. The 3DS documents show UTF-16 names and 8.3 SFN fields, so the interesting question is why the Switch SD-card path still exposes this CP932-oriented conversion behavior.
 
 4. There is a project [ftpsrv](https://github.com/ITotalJustice/ftpsrv) , the autor recently solves a game content unicode character problem. It is a special case that the game info stored in NACP file. The unicode characters is read and filtered before by replace the none-ascii character with `_`, he add `g_skip_ascii_convert` to skip the conversion, see [ftpsrv-issue 11](https://github.com/ITotalJustice/ftpsrv/issues/11). So the game info is displayed correctly. The key point is the game info is stored in a database file.
