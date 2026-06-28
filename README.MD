@@ -22,6 +22,11 @@ If the folders and files are too many, it's difficult to manage. So I want to kn
 - The suspicious part of Directory iteration
 - What I have tried?
 
+[switch-sfat-codecvt](switch-sfat-codecvt.md)
+- updated root-cause analysis of Horizon FS SD-card FAT filename conversion
+- why the simple byte-preserving patch helps Switch-created files
+- why PC-created standard UTF-16 FAT long filenames still need a real UTF-8/UTF-16 codecvt
+
 [directory-struct-of-libnx](directory-struct-of-libnx.md)
 - DirectoryEntry (ns)
 - DirectoryEntry （3Ds）
@@ -44,9 +49,7 @@ If the folders and files are too many, it's difficult to manage. So I want to kn
 
 # Some conclusion
 
-1. there is a few of libs or homebrews treat none-ascii chars as '_'.
-  - sush as fatfs (without unicode).
-  - I can see many homebrews turn off fatfs unicode support. 
+1. The stronger current conclusion is that Horizon OS FS itself converts SD-card FAT names through a CP932 / Shift-JIS codecvt layer. libnx and homebrew rendering can expose the problem, but they are not the root cause.
 
 2. The AtmosphereNX has two ways to access SD card: File-Based Partition and Raw Partition. 
   - File-Based partition, the AI mentioned that we can implement another Fs and driver to mount a file image. 
@@ -56,6 +59,3 @@ If the folders and files are too many, it's difficult to manage. So I want to kn
 3. The nintendo is very professional at game console, how could they make mistake on file system service? we can see the switchbrew posted DirectoryEntry class fields, the 3ds using UTF16 names and 8.3 SFN, what employee can build a new system without checking the previous system documents!!
 
 4. There is a project [ftpsrv](https://github.com/ITotalJustice/ftpsrv) , the autor recently solves a game content unicode character problem. It is a special case that the game info stored in NACP file. The unicode characters is read and filtered before by replace the none-ascii character with `_`, he add `g_skip_ascii_convert` to skip the conversion, see [ftpsrv-issue 11](https://github.com/ITotalJustice/ftpsrv/issues/11). So the game info is displayed correctly. The key point is the game info is stored in a database file.
-
-
-
